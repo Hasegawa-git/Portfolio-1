@@ -1,7 +1,7 @@
 # Static Website Hosting with S3 + CloudFront + Route 53
 
-## ✅ Site URL  
-https://www.takahiro-hasegawa.net
+## ✅ Deployed Site   
+URL：https://www.takahiro-hasegawa.net
 
 ## ✅ AWS Services Used  
 - Amazon S3 (Static Website Hosting)  
@@ -28,15 +28,42 @@ flowchart TD
     CF -->|"④ Return HTTPS Response"| User
     ACM -->|"Provide SSL Certificate"| CF
 ```
+## ✅ Service Configuration Details
 
-## ✅ Implementation Steps
-- Purchased a custom domain from onamae.com
-- Set up Route 53 as the nameserver and created a hosted zone
-- Created an S3 bucket matching the domain name and enabled static website hosting
-- Set up CloudFront with the S3 origin and configured HTTPS delivery
-- Issued an SSL certificate in the N. Virginia region and applied it to CloudFront
-- Added an A record (Alias) in Route 53 to route traffic from the domain to CloudFront
-- Executed cache invalidation to reflect changes immediately
+### 1. Route 53 (A Record)
+Configured DNS routing from `www.takahiro-hasegawa.net` to the CloudFront distribution.
+
+![Route 53 A Record](screenshots/route53-a-record.png)
+
+### 2. CloudFront General Settings (HTTPS & Alternate Domain)
+Set up a custom domain and applied an SSL certificate from AWS Certificate Manager.
+
+![CloudFront General Settings](screenshots/cloudfront-general.png)
+
+### 3. CloudFront Origin Settings (S3 Integration)
+Defined the origin of the distribution as an S3 bucket hosting the static content.
+
+![CloudFront Origin Settings](screenshots/cloudfront-origin.png)
+
+### 4. SSL Certificate (ACM)
+Issued in the N. Virginia (`us-east-1`) region and validated via CNAME record.
+
+![ACM Certificate Details](screenshots/acm-certificate.png)
+
+### 5. S3 Object: index.html
+Uploaded and stored `index.html` as the main content of the website.
+
+![S3 index.html Details](screenshots/s3-index-html.png)
+
+### 6. S3 Static Website Hosting
+Enabled static website hosting from the S3 bucket's properties.
+
+![S3 Static Hosting Settings](screenshots/s3-static-hosting.png)
+
+### 7. Final Website Display
+Verified HTTPS access to the website via CloudFront using the custom domain.
+
+![Final Website Display](screenshots/final-site.png)
 
 ## ✅ Key Learnings
 - Integration between AWS services (S3 / CloudFront / Route 53 / ACM)

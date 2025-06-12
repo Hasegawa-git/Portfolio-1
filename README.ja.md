@@ -28,14 +28,55 @@ flowchart TD
     ACM -->|"SSL証明書を提供"| CF
 ```
 
-## ✅ 実施内容
-- お名前.comで独自ドメインを取得
-- ネームサーバーをRoute 53に設定し、ホストゾーンを作成
-- S3バケットをドメイン名と一致させて作成、静的ホスティングを有効化
-- CloudFrontでオリジンにS3を指定し、HTTPS配信を構成
-- バージニア北部リージョンでSSL証明書を発行し、CloudFrontに適用
-- Route 53にAレコード（Alias）を追加し、独自ドメインからCloudFrontへルーティング
-- キャッシュ削除（Invalidation）を実施し、変更を即時反映
+## ✅ 実装ステップと画面キャプチャ
+
+### ① Route 53: 独自ドメインとホストゾーン作成  
+`お名前.com`で取得したドメインに対し、Route 53でホストゾーンを作成し、NSレコードを取得。
+
+![ホストゾーンのNSレコード](screenshots/route53-ns-record.png)
+
+→ `お名前.com` 側でネームサーバーを上記に変更。
+
+
+### ② S3: 静的Webサイトホスティング設定
+
+- バケット名は `www.takahiro-hasegawa.net`
+- 静的ホスティングを有効化、`index.html`をアップロード
+
+![S3ホスティング設定画面](screenshots/s3-static-hosting.png)  
+![index.html アップロード済み](screenshots/s3-index-object.png)
+
+
+### ③ ACM: バージニア北部でSSL証明書を発行
+
+- `takahiro-hasegawa.net`, `www.takahiro-hasegawa.net` を登録
+- DNS検証を使用（Route 53が自動でCNAMEレコードを設定）
+
+![ACM証明書リスト](screenshots/acm-certificate.png)
+
+
+### ④ CloudFront: ディストリビューション作成と設定
+
+- オリジンにS3（静的ホスティングURL）を指定
+- カスタムドメインに独自ドメインを追加し、ACM証明書を選択
+- デフォルトルートオブジェクトは `index.html`
+
+![CloudFront設定](screenshots/cloudfront-settings.png)
+
+
+### ⑤ Route 53: Aレコード（ALIAS）追加でCloudFrontと接続
+
+![Route 53 Aレコード（ALIAS）](screenshots/route53-alias-record.png)
+
+
+### ⑥ 動作確認とdigコマンド
+
+- `https://www.takahiro-hasegawa.net` にアクセスして表示確認
+- `dig` でCloudFrontのCNAME解決も確認
+
+![表示確認](screenshots/browser-success.png)  
+![dig結果](screenshots/dig-command.png)
+
 
 ## ✅ 学んだこと
 - AWSサービス間の連携（S3/CloudFront/Route 53/ACM）

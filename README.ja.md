@@ -1,7 +1,7 @@
 # S3 + CloudFront + Route 53 による静的Webサイト公開
 
-## ✅ サイトURL
-https://www.takahiro-hasegawa.net
+## ✅ 成果物
+サイトURL：https://www.takahiro-hasegawa.net
 
 ## ✅ 使用AWSサービス
 - Amazon S3（静的Webサイトホスティング）
@@ -27,56 +27,42 @@ flowchart TD
     CF -->|"④ HTTPS 応答"| User
     ACM -->|"SSL証明書を提供"| CF
 ```
+## ✅ 各サービス設定詳細
 
-## ✅ 実装ステップと画面キャプチャ
+### 1. Route 53 設定（Aレコード）
+独自ドメイン `www.takahiro-hasegawa.net` を CloudFront にルーティングするための設定。
 
-### ① Route 53: 独自ドメインとホストゾーン作成  
-`お名前.com`で取得したドメインに対し、Route 53でホストゾーンを作成し、NSレコードを取得。
+![Route 53 のAレコード設定](screenshots/route53-a-record.png)
 
-![ホストゾーンのNSレコード](screenshots/route53-ns-record.png)
+### 2. CloudFront 一般設定（HTTPS・代替ドメイン）
+カスタムドメイン名と ACM による SSL 証明書を設定。
 
-→ `お名前.com` 側でネームサーバーを上記に変更。
+![CloudFrontの一般設定画面](screenshots/cloudfront-general.png)
 
+### 3. CloudFront オリジン（S3との接続）
+オリジンに静的Webサイトをホスティングした S3 バケットを指定。
 
-### ② S3: 静的Webサイトホスティング設定
+![CloudFrontのオリジン設定](screenshots/cloudfront-origin.png)
 
-- バケット名は `www.takahiro-hasegawa.net`
-- 静的ホスティングを有効化、`index.html`をアップロード
+### 4. 証明書発行（ACM）
+バージニア北部（us-east-1）リージョンでの SSL 証明書発行と CNAME 検証完了後の状態。
 
-![S3ホスティング設定画面](screenshots/s3-static-hosting.png)  
-![index.html アップロード済み](screenshots/s3-index-object.png)
+![ACMの証明書詳細](screenshots/acm-certificate.png)
 
+### 5. S3 に配置した index.html の情報
+ホスティング対象となる `index.html` のファイル情報画面。
 
-### ③ ACM: バージニア北部でSSL証明書を発行
+![S3のindex.htmlの詳細](screenshots/s3-index-html.png)
 
-- `takahiro-hasegawa.net`, `www.takahiro-hasegawa.net` を登録
-- DNS検証を使用（Route 53が自動でCNAMEレコードを設定）
+### 6. 静的ホスティング設定（S3プロパティ）
+S3 バケットのプロパティで静的ウェブサイトホスティングを有効化した設定。
 
-![ACM証明書リスト](screenshots/acm-certificate.png)
+![S3の静的ホスティング設定](screenshots/s3-static-hosting.png)
 
+### 7. ブラウザでの表示確認（完成画面）
+CloudFront経由で HTTPS による安全な配信が確認できる完成状態。
 
-### ④ CloudFront: ディストリビューション作成と設定
-
-- オリジンにS3（静的ホスティングURL）を指定
-- カスタムドメインに独自ドメインを追加し、ACM証明書を選択
-- デフォルトルートオブジェクトは `index.html`
-
-![CloudFront設定](screenshots/cloudfront-settings.png)
-
-
-### ⑤ Route 53: Aレコード（ALIAS）追加でCloudFrontと接続
-
-![Route 53 Aレコード（ALIAS）](screenshots/route53-alias-record.png)
-
-
-### ⑥ 動作確認とdigコマンド
-
-- `https://www.takahiro-hasegawa.net` にアクセスして表示確認
-- `dig` でCloudFrontのCNAME解決も確認
-
-![表示確認](screenshots/browser-success.png)  
-![dig結果](screenshots/dig-command.png)
-
+![ブラウザでの最終表示](screenshots/final-site.png)
 
 ## ✅ 学んだこと
 - AWSサービス間の連携（S3/CloudFront/Route 53/ACM）

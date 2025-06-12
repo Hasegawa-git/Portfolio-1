@@ -9,7 +9,7 @@ with a custom domain and HTTPS support.
 
 ---
 
-## 📄 ドキュメント / Documentation
+#### 📄 ドキュメント / Documentation
 
 - 📘 日本語版：[README.ja.md](./README.ja.md)  
 - 📗 English version ：[README.en.md](./README.en.md)
